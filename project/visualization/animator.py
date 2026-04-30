@@ -180,7 +180,7 @@ class NeuralNetworkGraph:
                 )
 
     def _draw_static_connections(self):
-        # Hidden → Output (siempre peso 1, sin entrenar)
+        # Hidden -> Output (siempre peso 1, sin entrenar)
         for i in range(2):
             h_pos = self.LAYOUT['hidden'][i]
             o_pos = self.LAYOUT['output'][i]
@@ -190,55 +190,57 @@ class NeuralNetworkGraph:
                 '-', color='#4a4a6a', linewidth=1.5, alpha=0.5
             )
 
-    def update(self, weights):
-        """Actualiza el grosor y color de las conexiones."""
-        # Limpiar conexiones anteriores
-        for line in self.conn_lines:
-            line.remove()
-        for lbl in self.conn_labels:
-            lbl.remove()
-        self.conn_lines.clear()
-        self.conn_labels.clear()
-
-        cmap = plt.cm.RdBu
-        norm = colors.Normalize(vmin=-2, vmax=2)
-
-        # Conexiones principales (w1-w4)
+        # Crear lineas y labels vacios para pesos entrenables
         for from_layer, from_idx, to_layer, to_idx, w_idx in self.CONNECTIONS:
             f_pos = self.LAYOUT[from_layer][from_idx]
             t_pos = self.LAYOUT[to_layer][to_idx]
-            w = weights[w_idx]
-            color = cmap(norm(w))
-            lw = max(0.5, min(6.0, abs(w) * 3))
-
             line, = self.ax.plot(
                 [f_pos[0] + 0.05, t_pos[0] - 0.05],
                 [f_pos[1], t_pos[1]],
-                '-', color=color, linewidth=lw, alpha=0.8, zorder=3
+                '-', color='#000000', linewidth=1, alpha=0.8, zorder=3
             )
             self.conn_lines.append(line)
 
             mid_x = (f_pos[0] + t_pos[0]) / 2
             mid_y = (f_pos[1] + t_pos[1]) / 2
             lbl = self.ax.text(
-                mid_x, mid_y + 0.04,
-                f'{self.WEIGHT_NAMES[w_idx]}={w:+.2f}',
+                mid_x, mid_y + 0.04, '',
                 ha='center', va='bottom', fontsize=7,
                 color='#c0c0d0', zorder=7
             )
             self.conn_labels.append(lbl)
 
-        # Bias labels
+        # Bias labels vacios
         for h_idx, b_idx in [(0, 4), (1, 5)]:
             pos = self.LAYOUT['hidden'][h_idx]
-            b = weights[b_idx]
             lbl = self.ax.text(
-                pos[0], pos[1] - 0.08,
-                f'{self.WEIGHT_NAMES[b_idx]}={b:+.2f}',
+                pos[0], pos[1] - 0.08, '',
                 ha='center', va='top', fontsize=7,
                 color='#ffab40', zorder=7
             )
             self.conn_labels.append(lbl)
+
+    def update(self, weights):
+        """Actualiza el grosor y color de las conexiones sin recrearlas."""
+        cmap = plt.cm.RdBu
+        norm = colors.Normalize(vmin=-2, vmax=2)
+
+        # Conexiones principales (w1-w4)
+        for i, (from_layer, from_idx, to_layer, to_idx, w_idx) in enumerate(self.CONNECTIONS):
+            w = weights[w_idx]
+            color = cmap(norm(w))
+            lw = max(0.5, min(6.0, abs(w) * 3))
+
+            self.conn_lines[i].set_color(color)
+            self.conn_lines[i].set_linewidth(lw)
+            self.conn_labels[i].set_text(f'{self.WEIGHT_NAMES[w_idx]}={w:+.2f}')
+
+        # Bias labels
+        for i, (h_idx, b_idx) in enumerate([(0, 4), (1, 5)]):
+            b = weights[b_idx]
+            self.conn_labels[len(self.CONNECTIONS) + i].set_text(
+                f'{self.WEIGHT_NAMES[b_idx]}={b:+.2f}'
+            )
 
     def pulse_forward(self):
         """Efecto de pulso forward (animación simple)."""

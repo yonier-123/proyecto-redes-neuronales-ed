@@ -23,7 +23,7 @@ import numpy as np
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
     QLabel, QPushButton, QComboBox, QSlider, QGroupBox, QFrame,
-    QApplication, QStyleFactory,
+    QApplication, QStyleFactory, QScrollArea, QFileDialog,
 )
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer
 from PyQt5.QtGui import QFont, QPalette, QColor
@@ -350,24 +350,77 @@ class NeuralODEApp(QMainWindow):
         self.lr_slider.valueChanged.connect(self._on_lr_changed)
         layout.addWidget(self.lr_slider)
 
-        # ── Display métricas ──
+        # ── Velocidad de animacion ──
+        speed_layout = QHBoxLayout()
+        speed_layout.addWidget(QLabel('Velocidad:'))
+        self.speed_label = QLabel('1x')
+        self.speed_label.setStyleSheet('color: #ffab40; font-weight: bold;')
+        speed_layout.addWidget(self.speed_label)
+        layout.addLayout(speed_layout)
+
+        self.speed_slider = QSlider(Qt.Horizontal)
+        self.speed_slider.setRange(1, 10)
+        self.speed_slider.setValue(1)
+        self.speed_slider.valueChanged.connect(self._on_speed_changed)
+        layout.addWidget(self.speed_slider)
+
+        # ── Sliders de pesos manuales ──
+        sep0 = QFrame()
+        sep0.setFrameShape(QFrame.HLine)
+        sep0.setStyleSheet('color: #2a2a4a;')
+        layout.addWidget(sep0)
+        layout.addWidget(QLabel('Pesos manuales:'))
+
+        self.weight_sliders = {}
+        w_names = ['w1', 'w2', 'w3', 'w4', 'b1', 'b2']
+        w_colors = ['#4fc3f7', '#00ff88', '#ff6b6b', '#e040fb', '#ffab40', '#7c4dff']
+        for name, color in zip(w_names, w_colors):
+            row = QHBoxLayout()
+            lbl = QLabel(f'{name}:')
+            lbl.setFixedWidth(25)
+            lbl.setStyleSheet(f'color: {color}; font-weight: bold; font-size: 10px;')
+            row.addWidget(lbl)
+            sl = QSlider(Qt.Horizontal)
+            sl.setRange(-200, 200)
+            sl.setValue(0)
+            sl.setProperty('weight_name', name)
+            sl.valueChanged.connect(self._on_weight_slider_changed)
+            row.addWidget(sl)
+            val_lbl = QLabel('0.00')
+            val_lbl.setFixedWidth(40)
+            val_lbl.setStyleSheet(f'color: {color}; font-size: 10px;')
+            row.addWidget(val_lbl)
+            self.weight_sliders[name] = {'slider': sl, 'label': val_lbl}
+            layout.addLayout(row)
+
+        # ── Display metricas ──
         sep = QFrame()
         sep.setFrameShape(QFrame.HLine)
         sep.setStyleSheet('color: #2a2a4a;')
         layout.addWidget(sep)
 
-        self.epoch_label = QLabel('Época: 0')
+        self.epoch_label = QLabel('Epoca: 0')
         self.epoch_label.setStyleSheet('color: #4fc3f7; font-size: 14px; font-weight: bold;')
         layout.addWidget(self.epoch_label)
 
-        self.loss_label = QLabel('Loss: —')
+        self.loss_label = QLabel('Loss: ---')
         self.loss_label.setStyleSheet('color: #ff6b6b; font-size: 14px; font-weight: bold;')
         layout.addWidget(self.loss_label)
 
-        self.weights_label = QLabel('Pesos: —')
+        self.weights_label = QLabel('Pesos: ---')
         self.weights_label.setStyleSheet('color: #c0c0d0; font-size: 10px;')
         self.weights_label.setWordWrap(True)
         layout.addWidget(self.weights_label)
+
+        # ── Boton EXPORT ──
+        self.export_btn = QPushButton('EXPORT PNG')
+        self.export_btn.setObjectName('exportBtn')
+        self.export_btn.setStyleSheet(
+            'QPushButton { border-color: #4fc3f7; color: #4fc3f7; }'
+            'QPushButton:hover { background-color: #4fc3f7; color: #000; }'
+        )
+        self.export_btn.clicked.connect(self._on_export)
+        layout.addWidget(self.export_btn)
 
         layout.addStretch()
         return group
@@ -392,6 +445,7 @@ class NeuralODEApp(QMainWindow):
         self.field.randomize_weights(scale=0.5, rng=np.random.default_rng())
         self.nn_graph.update(self.field.get_weights())
         self.heat_map.update()
+        self._sync_weight_sliders()
 
         # Actualizar displays
         w = self.field.get_weights()
@@ -484,8 +538,8 @@ class NeuralODEApp(QMainWindow):
         self.traj_plot.reset()
 
         # Reset UI
-        self.epoch_label.setText('Época: 0')
-        self.loss_label.setText('Loss: —')
+        self.epoch_label.setText('Epoca: 0')
+        self.loss_label.setText('Loss: ---')
 
         # Reload preset
         self._load_preset(self.current_preset)
@@ -517,16 +571,82 @@ class NeuralODEApp(QMainWindow):
         self.optimizer.lr = lr
 
     def _get_lr(self):
-        """Convierte slider (0-100) a LR en escala logarítmica."""
+        """Convierte slider (0-100) a LR en escala logaritmica."""
         v = self.lr_slider.value()
-        return 10 ** (-4 + v * 3 / 100)  # 0.0001 → 0.1
+        return 10 ** (-4 + v * 3 / 100)  # 0.0001 -> 0.1
+
+    def _on_speed_changed(self, value):
+        """Cambia la velocidad de la animacion (delay entre epocas)."""
+        self.speed_label.setText(f'{value}x')
+        if self.training_thread and self.training_thread.isRunning():
+            self.training_thread.delay_ms = max(5, 50 // value)
+
+    def _on_weight_slider_changed(self, value):
+        """Actualiza un peso individual desde su slider."""
+        if self.training_thread and self.training_thread.isRunning():
+            return  # No modificar pesos durante el entrenamiento
+        sender = self.sender()
+        name = sender.property('weight_name')
+        real_val = value / 100.0  # -2.0 a 2.0
+        self.weight_sliders[name]['label'].setText(f'{real_val:.2f}')
+        # Aplicar al campo
+        w_names = ['w1', 'w2', 'w3', 'w4', 'b1', 'b2']
+        idx = w_names.index(name)
+        w = self.field.get_weights()
+        w[idx] = real_val
+        self.field.set_weights(w)
+        # Actualizar visualizaciones
+        self.nn_graph.update(self.field.get_weights())
+        self.heat_map.update()
+        self.nn_canvas.draw_idle()
+        self.heat_canvas.draw_idle()
+        # Actualizar trayectoria
+        preset = get_preset(self.current_preset)
+        _, xs_p, ys_p = self.solver.solve_euler(
+            preset['x0'], preset['y0'], self.t_span, config.DT
+        )
+        self.traj_plot.update(xs_p, ys_p)
+        self.traj_canvas.draw_idle()
+
+    def _on_export(self):
+        """Exporta todas las graficas como archivos PNG."""
+        folder = QFileDialog.getExistingDirectory(
+            self, 'Seleccionar carpeta para exportar'
+        )
+        if not folder:
+            return
+        canvases = {
+            'red_neuronal': self.nn_canvas,
+            'trayectoria_2d': self.traj_canvas,
+            'heatmap_activaciones': self.heat_canvas,
+            'paisaje_3d_perdida': self.loss3d_canvas,
+            'convergencia': self.conv_canvas,
+        }
+        for name, canvas in canvases.items():
+            path = f'{folder}/{name}.png'
+            canvas.fig.savefig(path, dpi=150, facecolor='#0f0f1a',
+                               bbox_inches='tight')
+        self.status_label.setText(
+            f'  Exportado: {len(canvases)} graficas en {folder}'
+        )
+
+    def _sync_weight_sliders(self):
+        """Sincroniza los sliders con los pesos actuales del campo."""
+        w = self.field.get_weights()
+        w_names = ['w1', 'w2', 'w3', 'w4', 'b1', 'b2']
+        for i, name in enumerate(w_names):
+            sl_data = self.weight_sliders[name]
+            sl_data['slider'].blockSignals(True)
+            sl_data['slider'].setValue(int(w[i] * 100))
+            sl_data['label'].setText(f'{w[i]:.2f}')
+            sl_data['slider'].blockSignals(False)
 
     # ─── Epoch update (from training thread) ──────────────────────
 
     def _on_epoch_done(self, epoch, loss, grads, weights, delta):
         """Actualiza todas las visualizaciones con datos de la época."""
         # Métricas
-        self.epoch_label.setText(f'Época: {epoch}')
+        self.epoch_label.setText(f'Epoca: {epoch}')
         self.loss_label.setText(f'Loss: {loss:.6f}')
         w_str = '  '.join(f'{n}={v:+.3f}' for n, v in
                           zip(NeuralField.WEIGHT_NAMES, weights))
@@ -534,15 +654,13 @@ class NeuralODEApp(QMainWindow):
 
         # 1. Red neuronal
         self.nn_graph.update(weights)
-        self.nn_canvas.draw_idle()
+        self._sync_weight_sliders()
 
         # 2. Convergencia
         self.conv_panel.update(epoch, loss, grads, weights, delta)
-        self.conv_canvas.draw_idle()
 
         # 3. Paisaje 3D
         self.loss_landscape.update(weights, loss)
-        self.loss3d_canvas.draw_idle()
 
         # 4. Trayectoria predicha (cada 5 épocas)
         if epoch % 5 == 0:
@@ -551,12 +669,33 @@ class NeuralODEApp(QMainWindow):
                 preset['x0'], preset['y0'], self.t_span, config.DT
             )
             self.traj_plot.update(xs_p, ys_p)
-            self.traj_canvas.draw_idle()
 
         # 5. Heatmap (cada 10 épocas)
         if epoch % 10 == 0:
             self.heat_map.update()
-            self.heat_canvas.draw_idle()
+
+        # --- Redibujado optimizado ---
+        # Para evitar saturar el hilo principal y que se ponga "lento",
+        # no llamamos a draw_idle() en CADA epoca si la velocidad es muy alta.
+        speed = self.speed_slider.value()
+        draw_freq = 1
+        if speed >= 4: draw_freq = 2
+        if speed >= 7: draw_freq = 5
+        if speed >= 9: draw_freq = 10
+
+        force_draw = (loss < 1e-6) or (epoch == config.MAX_EPOCHS)
+
+        # Redibujar solo cada N epocas o al finalizar
+        if epoch % draw_freq == 0 or force_draw:
+            self.nn_canvas.draw_idle()
+            self.conv_canvas.draw_idle()
+            self.loss3d_canvas.draw_idle()
+
+            if (epoch % 5 == 0) or force_draw:
+                self.traj_canvas.draw_idle()
+
+            if (epoch % 10 == 0) or force_draw:
+                self.heat_canvas.draw_idle()
 
     def _on_training_finished(self):
         self.play_btn.setEnabled(True)
