@@ -7,7 +7,7 @@ class LinealEquation:
         self.y=y
         self.w=w
         self.b=b
-        
+        self.textDetails=""
 
     def forward(self):#Prediccion Poner la red neuronal a pensar
         return self.w * self.x + self.b#Dado un valor x la red neuronal devuelve lo que cree que es y
@@ -41,11 +41,12 @@ class LinealEquation:
         return w,b 
 
 
-    def prueba(self):
+    def prueba(self,n_epoch):
+        self.textDetails = "" #Para refrescar Variable y se le puedan meter mas valores 
     #Prueba de 20 iteraciones repitiendo el proceso de
     # predecir ,de perdida, de calcular la gradiente ,de actualizar los valores de w y b para mejorar precision
     #Finalmente imprimir cada iteracion mostrando el proceso de aprendisaje
-        for epoch in range(30):#Entre mas iteraciones mas precisa se vuelve la red neuronal
+        for epoch in range(n_epoch):#Entre mas iteraciones mas precisa se vuelve la red neuronal
             y_predit = self.forward()  
                               #Con 20 todavia le falta
             l = self.loss(y_predit, self.y) #Con 30 es mucho mas precisa
@@ -54,7 +55,10 @@ class LinealEquation:
             w,b = self.actualizar(dw, db)
             self.w = w#Actualizacion de la variable
             self.b=b
+            self.textDetails+=f"Epoch {epoch}: loss={l:.4f}, w={w:.2f}, b={b:.2f}\n" #\n indica salto de linea
+            #Se va guardando la informacion dentro de la variable textDeatils
             print(f"Epoch {epoch}: loss={l:.4f}, w={w:.2f}, b={b:.2f}")
+        self.getTextDetails()
         return self.forward()
 
     def visualizacion(self):
@@ -63,3 +67,6 @@ class LinealEquation:
             plt.plot(self.x, self.forward(), color='red', label="Predicción")
             plt.legend()
             plt.show()#Muestra grafico final
+
+    def getTextDetails(self):
+        return self.textDetails

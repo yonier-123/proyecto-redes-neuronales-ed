@@ -27,8 +27,11 @@ def crearGraphics(ventana):
     canvas.draw()
     return canvas
 
-def actualizarGrafica(tipoFuncion):
+def capturarTextDetails():
+        return textDetails
 
+def actualizarGrafica(tipoFuncion,epoch):
+    global textDetails
     grafica.clear()#Limpia Grafica para poner otra 
    
     x = np.array([-1,-0.5,0,0.5,1])#Valores para la red neuronal en x
@@ -48,10 +51,13 @@ def actualizarGrafica(tipoFuncion):
         )
         grafica.plot(
           x,
-          objLineal.prueba(),#Me devuelve la ultima iteracion de la prediccion para posteriormente graficarla
+          objLineal.prueba(epoch),#Me devuelve la ultima iteracion de la prediccion para posteriormente graficarla
           color='red',
           label="Predicción"
         )
+        textDetails = objLineal.getTextDetails()
+        capturarTextDetails()
+
 
     elif tipoFuncion == "FuncionCuadratica":
         w = np.random.randn()  # peso
@@ -71,10 +77,15 @@ def actualizarGrafica(tipoFuncion):
         
         grafica.plot(
           x,
-          objCuadratica.prueba(),#Me devuelve la ultima iteracion de la prediccion para posteriormente graficarla
+          objCuadratica.prueba(epoch),#Me devuelve la ultima iteracion de la prediccion para posteriormente graficarla
           color='red',
           label="Predicción"
         )
+        textDetails = objCuadratica.getTextDetails()
+        capturarTextDetails()
+    elif tipoFuncion=="":
+        textDetails=""#Queda Vacio porque no se ha seleccionado una red neuronal que aprende una funcion
+        capturarTextDetails()
 
     canvas.draw()#Dibuja Grafica
 

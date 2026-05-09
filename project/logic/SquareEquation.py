@@ -8,7 +8,8 @@ class SquareEquation:
         self.w=w
         self.b=b
         self.z=z
-        
+        self.textDetails=""
+
     #ax^2+bx+c
     def forward(self):#Prediccion Poner la red neuronal a pensar
         return self.w * self.x**2 + self.b*self.x+self.z#Dado un valor x la red neuronal devuelve lo que cree que es y
@@ -44,11 +45,12 @@ class SquareEquation:
         return w,b,z 
 
 
-    def prueba(self):
+    def prueba(self,n_epoch):
+        self.textDetails = "" #Para refrescar Variable y se le puedan meter mas valores 
     #Prueba de 20 iteraciones repitiendo el proceso de
     # predecir ,de perdida, de calcular la gradiente ,de actualizar los valores de w y b para mejorar precision
     #Finalmente imprimir cada iteracion mostrando el proceso de aprendisaje
-        for epoch in range(100):#Entre mas iteraciones mas precisa se vuelve la red neuronal
+        for epoch in range(n_epoch):#Entre mas iteraciones mas precisa se vuelve la red neuronal
             y_predit = self.forward()  
                               #Con 20 todavia le falta
             l = self.loss(y_predit, self.y) #Con 30 es mucho mas precisa
@@ -58,6 +60,7 @@ class SquareEquation:
             self.w = w#Actualizacion de la variable
             self.b=b
             self.z=z
+            self.textDetails+=f"Epoch {epoch}: loss={l:.4f}, w={w:.2f}, b={b:.2f}\n" #\n indica salto de linea
             print(f"Epoch {epoch}: loss={l:.4f}, w={w:.2f}, b={b:.2f}, z={z:.2f}")
         return self.forward()
 
@@ -67,3 +70,6 @@ class SquareEquation:
             plt.plot(self.x, self.forward(), color='red', label="Predicción")
             plt.legend()
             plt.show()#Muestra grafico final
+
+    def getTextDetails(self):
+        return self.textDetails
