@@ -3,19 +3,32 @@ from tkinter import ttk#Para JComboBox
 from guiGraphic import graphics#Para comunicarme con la clase graphics
 
 def entrenar():
+    w=1#Defino variables para evitar errores
+    b=0
+    w2=0
     tipoFuncion = combo.get()#Captura el tipo de funcion escojida
+    #Capturar valor que va a tener las funciones
+    if entradaW.get() !="":#Para Evitar que se dañe el programa en caso de no escribir en una casilla
+       w = int(entradaW.get())
+    if entradaB.get() != "":
+        b = int(entradaB.get())
+    if entradaW2.get() != "":
+        w2 = int(entradaW2.get())
+    
     #Condicional que dice si la entrada de datos no es vacia que ejecute el metodo de actualizar epoch de lo contrario no
     if entradaEpoch.get()!="":
-        getTexto(tipoFuncion)
+        getTexto(tipoFuncion,w,b,w2)
     else:
-        graphics.actualizarGrafica(tipoFuncion,30)#Llama metodo que se encarga de actualizar Grafica    
+        graphics.actualizarGrafica(tipoFuncion,30,1,0,0)#Llama metodo que se encarga de actualizar Grafica    
         inputDatesTextArea(graphics.capturarTextDetails())#Agrega Detalles del Entrenamiento
     combo.set("")
 
-def getTexto(tipoFuncion):
+
+def getTexto(tipoFuncion,w,b,w2):
     epoch=int(entradaEpoch.get()) #Entrada cambiante 
-    graphics.actualizarGrafica(tipoFuncion,epoch)
+    graphics.actualizarGrafica(tipoFuncion,epoch,w,b,w2)
     inputDatesTextArea(graphics.capturarTextDetails())#Agrega Detalles del Entrenamiento
+
 
 def inputDatesTextArea(textDetails):
     textArea.delete(
@@ -30,7 +43,7 @@ def inputDatesTextArea(textDetails):
 
 def iniciar():
     global texto#Defino que es una variable global
-    global entradaEpoch
+    global entradaEpoch,entradaW,entradaB,entradaW2
     global textArea
     global combo,canva
     global objGraphic,ventana
@@ -42,14 +55,20 @@ def iniciar():
 #Agrego texto dentro de la interfaz
     textEpoch = tk.Label(ventana,text="Veces que Quiero Entrenar La redNeuronal")
     textTipoFuncion = tk.Label(ventana,text="Selecciona Tipo de Funcion a Entrenar")
+    textW=tk.Label(ventana,text="Ingresa valor W")
+    textB=tk.Label(ventana,text="Ingresa valor B")
+    textW2=tk.Label(ventana,text="Ingresa valor W2")
     texto = tk.Label(ventana,text= "Simulador Red Neuronal")
     ventana.resizable(False,False)#Para que no se redimencione la pantalla
 
 #Agrego boton dentro de la interfaz  (gui,buttonName,funcion/evento)
     botonTraining = tk.Button(ventana,text="EntrenarRedNeuronal",command=entrenar)#Captura Evento del JComboBox
-    
+
 #JTextField  #Epoch quiere decir una pasada completa por todos los datos de entrenamiento
     entradaEpoch = tk.Entry(ventana)#Valor para saber cuantas iteraciones voy a hacer en el for
+    entradaW = tk.Entry(ventana)
+    entradaB = tk.Entry(ventana)
+    entradaW2 = tk.Entry(ventana)
 
 #JTextArea
     textArea = tk.Text(ventana, width=40, height=15)
@@ -73,6 +92,13 @@ def iniciar():
     botonTraining.place(x=550,y=180)
     textArea.place(x=550,y=250)
     scroll.place(x=865,y=250,height=245)#Ubicacion del Scroll dentro del TextArea
+    entradaW.place(x=20,y=460)
+    entradaB.place(x=20,y=510)
+    entradaW2.place(x=200,y=460)
+    textW.place(x=20,y=440)
+    textB.place(x=20,y=490)
+    textW2.place(x=200,y=440)
+
 
 #loop infinito para que siempre se ejecute la ventana
     ventana.mainloop()
