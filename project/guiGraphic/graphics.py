@@ -12,7 +12,7 @@ def crearGraphics(ventana):
     global x,y,w,b,z
     global grafica,canvas
 
-    #Crear Grafica
+    #Crear Grafica   #(5,4)
     figura = Figure(figsize=(5,4),dpi=100)
 
     grafica = figura.add_subplot(111)
@@ -30,7 +30,7 @@ def crearGraphics(ventana):
 def capturarTextDetails():
         return textDetails
 
-def actualizarGrafica(tipoFuncion,epoch):
+def actualizarGrafica(tipoFuncion,epoch,w1,b1,w2):
     global textDetails
     grafica.clear()#Limpia Grafica para poner otra 
    
@@ -39,11 +39,12 @@ def actualizarGrafica(tipoFuncion,epoch):
     if tipoFuncion == "FuncionLineal":
         w = np.random.randn()  # peso
         b = np.random.randn()  # bias de la red(direcciones)
-        y = 2*x + 5
+        #y = 2*x + 5
+        y=w1*x + b1
         grafica.plot(x, y)
         #Comunicaciones de Objetos(Instancias)
         objLineal = LinealEquation(x,y,w,b)
-        grafica.set_title("Red Neuronal Lineal")
+        grafica.set_title("Red Neuronal F.Lineal y = wx+b")
         grafica.scatter(
             x,
             y,
@@ -64,11 +65,12 @@ def actualizarGrafica(tipoFuncion,epoch):
         b = np.random.randn()  # bias de la red(direcciones)
         z = np.random.randn()
         x = np.linspace(-1,1,20)#Valores mejores ajustados para la funcion Cuadratica en este caso
-        y = x**2#Funcion a aprender 
+       # y = x**2#Funcion a aprender
+        y = w1*x**2+w2*x+b1 
         grafica.plot(x, y)
         #Comunicaciones de Objetos(Instancias)
         objCuadratica = SquareEquation(x,y,w,b,z)
-        grafica.set_title("Red Neuronal Cuadrática")
+        grafica.set_title("Red Neuronal F.Cuadrática ")
         grafica.scatter(
             x,
             y,
@@ -81,6 +83,7 @@ def actualizarGrafica(tipoFuncion,epoch):
           color='red',
           label="Predicción"
         )
+        
         textDetails = objCuadratica.getTextDetails()
         capturarTextDetails()
     elif tipoFuncion=="":
