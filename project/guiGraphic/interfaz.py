@@ -75,6 +75,10 @@ def iniciar():
     textFrame = tk.Frame(ventana, bg="#ffffff", highlightthickness=1, highlightbackground="#dbe4f0")
     plotFrame = tk.Frame(ventana, bg="#ffffff", highlightthickness=1, highlightbackground="#dbe4f0")
 
+    titlePlot = tk.Label(plotFrame, text="Grafica", bg="#ffffff", fg="#0f172a", font=("Segoe UI", 11, "bold"))
+    titleControls = tk.Label(controlFrame, text="Controles", bg="#ffffff", fg="#0f172a", font=("Segoe UI", 11, "bold"))
+    titleOutput = tk.Label(textFrame, text="Salida", bg="#ffffff", fg="#0f172a", font=("Segoe UI", 11, "bold"))
+
     textEpoch = tk.Label(controlFrame,text="Veces que Quiero Entrenar La redNeuronal", bg="#ffffff", fg="#334155")
     textTipoFuncion = tk.Label(controlFrame,text="Selecciona Tipo de Funcion a Entrenar", bg="#ffffff", fg="#334155")
     textW=tk.Label(controlFrame,text="Ingresa valor W", bg="#ffffff", fg="#334155")
@@ -115,26 +119,30 @@ def iniciar():
                                          "FuncionCircunferencia"])
 #Creacion del grafico dentro de la interfaz
     canva = graphics.crearGraphics(plotFrame)
-    canva.get_tk_widget().pack(fill="both", expand=True, padx=8, pady=8)#El place reemplaza al pack(add(object) en java)
+    canva.get_tk_widget().pack(fill="both", expand=True, padx=8, pady=(28,8))#El place reemplaza al pack(add(object) en java)
     #Coordenadas de donde estan ubicados los Componentes en la Interfaz Grafica
     header.place(x=20,y=12)
     plotFrame.place(x=20,y=50, width=480, height=350)
     controlFrame.place(x=520,y=20, width=350, height=260)
     textFrame.place(x=520,y=295, width=350, height=265)
 
-    textTipoFuncion.place(x=20,y=20)
-    combo.place(x=20,y=42, width=300)
-    textEpoch.place(x=20,y=76)
-    entradaEpoch.place(x=20,y=98, width=120)#Es como el setBound(coordenadas) en java
-    textW.place(x=20,y=136)
-    entradaW.place(x=20,y=158, width=90)
-    textB.place(x=125,y=136)
-    entradaB.place(x=125,y=158, width=90)
-    textW2.place(x=230,y=136)
-    entradaW2.place(x=230,y=158, width=90)
-    botonTraining.place(x=90,y=190)
+    titlePlot.place(x=10,y=6)
+    titleControls.place(x=10,y=6)
+    titleOutput.place(x=10,y=6)
 
-    textArea.pack(side="left", fill="both", expand=True, padx=(8,0), pady=8)
+    textTipoFuncion.place(x=20,y=34)
+    combo.place(x=20,y=56, width=300)
+    textEpoch.place(x=20,y=90)
+    entradaEpoch.place(x=20,y=112, width=120)#Es como el setBound(coordenadas) en java
+    textW.place(x=20,y=150)
+    entradaW.place(x=20,y=172, width=90)
+    textB.place(x=125,y=150)
+    entradaB.place(x=125,y=172, width=90)
+    textW2.place(x=230,y=150)
+    entradaW2.place(x=230,y=172, width=90)
+    botonTraining.place(x=90,y=204)
+
+    textArea.pack(side="left", fill="both", expand=True, padx=(8,0), pady=(28,8))
     scroll.pack(side="right", fill="y", pady=8, padx=(0,8))
 
 
