@@ -5,7 +5,7 @@ from guiGraphic import graphics#Para comunicarme con la clase graphics
 def entrenar():
     w=1#Defino variables para evitar errores
     b=0
-    w2=0
+    w2=1#Default 1 para que funciones exponencial/trigonométrica no sean horizontales
     tipoFuncion = combo.get()#Captura el tipo de funcion escojida
     #Capturar valor que va a tener las funciones
     if entradaW.get() !="":#Para Evitar que se dañe el programa en caso de no escribir en una casilla
@@ -19,7 +19,7 @@ def entrenar():
     if entradaEpoch.get()!="":
         getTexto(tipoFuncion,w,b,w2)
     else:
-        graphics.actualizarGrafica(tipoFuncion,30,1,0,0)#Llama metodo que se encarga de actualizar Grafica    
+        graphics.actualizarGrafica(tipoFuncion,30,1,0,1)#Llama metodo que se encarga de actualizar Grafica    
         inputDatesTextArea(graphics.capturarTextDetails())#Agrega Detalles del Entrenamiento
     combo.set("")
 
@@ -37,6 +37,22 @@ def habilitacionInputs(event):
         entradaW2.config(state="disabled")
 
     elif kindOfFunction == "FuncionCuadratica":
+        entradaW.config(state="normal")
+        entradaB.config(state="normal")
+        entradaW2.config(state="normal")
+    elif kindOfFunction == "FuncionLogaritmica":
+        entradaW.config(state="normal")
+        entradaB.config(state="normal")
+        entradaW2.config(state="disabled")
+    elif kindOfFunction == "FuncionExponencial":
+        entradaW.config(state="normal")
+        entradaB.config(state="normal")
+        entradaW2.config(state="normal")
+    elif kindOfFunction == "FuncionTrigonometrica":
+        entradaW.config(state="normal")
+        entradaB.config(state="normal")
+        entradaW2.config(state="disabled")
+    elif kindOfFunction == "FuncionCircunferencia":
         entradaW.config(state="normal")
         entradaB.config(state="normal")
         entradaW2.config(state="normal")
@@ -95,13 +111,14 @@ def iniciar():
 
 #ComboBox
     combo = ttk.Combobox(ventana,values=["FuncionLineal","FuncionCuadratica",
-                                         "FuncionCubica"])
+                                         "FuncionCubica","FuncionLogaritmica",
+                                         "FuncionExponencial","FuncionTrigonometrica",
+                                         "FuncionCircunferencia"])
     combo.bind("<<ComboboxSelected>>",habilitacionInputs)#Para manejar Evento con ComboBox
 # Habilitacion de Entradas de usuario
     entradaW.config(state="disabled")
     entradaB.config(state="disabled")
     entradaW2.config(state="disabled")
-
 
 #Creacion del grafico dentro de la interfaz
     canva = graphics.crearGraphics(ventana)
