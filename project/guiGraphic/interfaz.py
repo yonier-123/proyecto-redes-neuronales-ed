@@ -29,6 +29,17 @@ def getTexto(tipoFuncion,w,b,w2):
     graphics.actualizarGrafica(tipoFuncion,epoch,w,b,w2)
     inputDatesTextArea(graphics.capturarTextDetails())#Agrega Detalles del Entrenamiento
 
+def habilitacionInputs(event):
+    kindOfFunction =combo.get()
+    if kindOfFunction == "FuncionLineal":
+        entradaW.config(state="normal")
+        entradaB.config(state="normal")
+        entradaW2.config(state="disabled")
+
+    elif kindOfFunction == "FuncionCuadratica":
+        entradaW.config(state="normal")
+        entradaB.config(state="normal")
+        entradaW2.config(state="normal")
 
 def inputDatesTextArea(textDetails):
     textArea.delete(
@@ -77,9 +88,21 @@ def iniciar():
     scroll = tk.Scrollbar(ventana)#Lo agrego ala Interfaz
     scroll.config(command=textArea.yview)#Conectar el scroll con el TextArea
     textArea.config(yscrollcommand=scroll.set)#Conecto TextArea con Scrollbar
+
+    scrollHorizontal = tk.Scrollbar(ventana,orient="horizontal")
+    scrollHorizontal.config(command=textArea.xview)
+    textArea.config(xscrollcommand=scrollHorizontal.set)
+
 #ComboBox
     combo = ttk.Combobox(ventana,values=["FuncionLineal","FuncionCuadratica",
                                          "FuncionCubica"])
+    combo.bind("<<ComboboxSelected>>",habilitacionInputs)#Para manejar Evento con ComboBox
+# Habilitacion de Entradas de usuario
+    entradaW.config(state="disabled")
+    entradaB.config(state="disabled")
+    entradaW2.config(state="disabled")
+
+
 #Creacion del grafico dentro de la interfaz
     canva = graphics.crearGraphics(ventana)
     canva.get_tk_widget().place(x=20,y=20)#El place reemplaza al pack(add(object) en java)
@@ -98,6 +121,7 @@ def iniciar():
     textW.place(x=20,y=440)
     textB.place(x=20,y=490)
     textW2.place(x=200,y=440)
+    scrollHorizontal.place(x=550,y=495,width=315)
 
 
 #loop infinito para que siempre se ejecute la ventana
