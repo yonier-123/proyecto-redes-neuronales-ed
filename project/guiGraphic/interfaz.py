@@ -40,6 +40,22 @@ def habilitacionInputs(event):
         entradaW.config(state="normal")
         entradaB.config(state="normal")
         entradaW2.config(state="normal")
+    elif kindOfFunction == "FuncionLogaritmica":
+        entradaW.config(state="normal")
+        entradaB.config(state="normal")
+        entradaW2.config(state="disabled")
+    elif kindOfFunction == "FuncionExponencial":
+        entradaW.config(state="normal")
+        entradaB.config(state="normal")
+        entradaW2.config(state="normal")
+    elif kindOfFunction == "FuncionTrigonometrica":
+        entradaW.config(state="normal")
+        entradaB.config(state="normal")
+        entradaW2.config(state="disabled")
+    elif kindOfFunction == "FuncionCircunferencia":
+        entradaW.config(state="normal")
+        entradaB.config(state="normal")
+        entradaW2.config(state="normal")
 
 def inputDatesTextArea(textDetails):
     textArea.delete(
@@ -105,7 +121,7 @@ def iniciar():
     entradaW2.config(state="disabled")
 
 
-                                         
+
 #Creacion del grafico dentro de la interfaz
     canva = graphics.crearGraphics(ventana)
     canva.get_tk_widget().place(x=20,y=20)#El place reemplaza al pack(add(object) en java)

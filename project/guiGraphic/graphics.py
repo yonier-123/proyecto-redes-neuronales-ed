@@ -98,7 +98,7 @@ def actualizarGrafica(tipoFuncion,epoch,w1,b1,w2):
         y = w1 * np.log(x) + b1
         grafica.plot(x, y)
         objLog = LogarithmicEquation(x, y, w, b)
-        grafica.set_title("Red Neuronal F.Logarítmica y = w·ln(x)+b")
+        grafica.set_title(f"Red Neuronal F.Logarítmica y = {w1}·ln(x)+{b1}")
         grafica.scatter(x, y, label="Datos reales")
         grafica.plot(x, objLog.prueba(epoch), color='red', label="Predicción")
         textDetails = objLog.getTextDetails()
@@ -114,7 +114,7 @@ def actualizarGrafica(tipoFuncion,epoch,w1,b1,w2):
         y = w1 * np.exp(w2 * x) + b1
         grafica.plot(x, y)
         objExp = ExponentialEquation(x, y, w, b, z)
-        grafica.set_title("Red Neuronal F.Exponencial y = w·e^(z·x)+b")
+        grafica.set_title(f"Red Neuronal F.Exponencial y = {w1}·e^({w2}·x)+{b1}")
         grafica.scatter(x, y, label="Datos reales")
         grafica.plot(x, objExp.prueba(epoch), color='red', label="Predicción")
         textDetails = objExp.getTextDetails()
@@ -130,7 +130,7 @@ def actualizarGrafica(tipoFuncion,epoch,w1,b1,w2):
         y = w1 * np.sin(w2 * x) + b1
         grafica.plot(x, y)
         objTrig = TrigonometricEquation(x, y, w, b, z)
-        grafica.set_title("Red Neuronal F.Trigonométrica y = w·sin(z·x)+b")
+        grafica.set_title(f"Red Neuronal F.Trigonométrica y = {w1}·sin({w2}·x)+{b1}")
         grafica.scatter(x, y, label="Datos reales")
         grafica.plot(x, objTrig.prueba(epoch), color='red', label="Predicción")
         textDetails = objTrig.getTextDetails()
