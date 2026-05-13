@@ -121,7 +121,7 @@ def iniciar():
     entradaW2.config(state="disabled")
 
 
->>>>>>>>> Temporary merge branch 2
+
 #Creacion del grafico dentro de la interfaz
     canva = graphics.crearGraphics(ventana)
     canva.get_tk_widget().place(x=20,y=20)#El place reemplaza al pack(add(object) en java)
