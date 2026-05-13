@@ -51,55 +51,91 @@ def iniciar():
     canva=None
 #Creo ventana
     ventana = tk.Tk()#nace la aplicacion  #ancho*alto
+    ventana.title("Simulador de Red Neuronal")
+    ventana.configure(bg="#eef2f7")
     ventana.geometry("900x600")#SetBounds pero en python
+    ventana.option_add("*Font", ("Segoe UI", 10))
+
+    style = ttk.Style()
+    style.theme_use("clam")
+    style.configure("TCombobox", padding=4)
+    style.configure("Accent.TButton", background="#2563eb", foreground="white", padding=(12, 6))
+    style.map("Accent.TButton", background=[("active", "+#1d4ed8")])
 #Agrego texto dentro de la interfaz
-    textEpoch = tk.Label(ventana,text="Veces que Quiero Entrenar La redNeuronal")
-    textTipoFuncion = tk.Label(ventana,text="Selecciona Tipo de Funcion a Entrenar")
-    textW=tk.Label(ventana,text="Ingresa valor W")
-    textB=tk.Label(ventana,text="Ingresa valor B")
-    textW2=tk.Label(ventana,text="Ingresa valor W2")
-    texto = tk.Label(ventana,text= "Simulador Red Neuronal")
+    header = tk.Label(
+        ventana,
+        text="Simulador Red Neuronal",
+        bg="#eef2f7",
+        fg="#0f172a",
+        font=("Segoe UI", 18, "bold")
+    )
     ventana.resizable(False,False)#Para que no se redimencione la pantalla
 
+    controlFrame = tk.Frame(ventana, bg="#ffffff", highlightthickness=1, highlightbackground="#dbe4f0")
+    textFrame = tk.Frame(ventana, bg="#ffffff", highlightthickness=1, highlightbackground="#dbe4f0")
+    plotFrame = tk.Frame(ventana, bg="#ffffff", highlightthickness=1, highlightbackground="#dbe4f0")
+
+    textEpoch = tk.Label(controlFrame,text="Veces que Quiero Entrenar La redNeuronal", bg="#ffffff", fg="#334155")
+    textTipoFuncion = tk.Label(controlFrame,text="Selecciona Tipo de Funcion a Entrenar", bg="#ffffff", fg="#334155")
+    textW=tk.Label(controlFrame,text="Ingresa valor W", bg="#ffffff", fg="#334155")
+    textB=tk.Label(controlFrame,text="Ingresa valor B", bg="#ffffff", fg="#334155")
+    textW2=tk.Label(controlFrame,text="Ingresa valor W2", bg="#ffffff", fg="#334155")
+
 #Agrego boton dentro de la interfaz  (gui,buttonName,funcion/evento)
-    botonTraining = tk.Button(ventana,text="EntrenarRedNeuronal",command=entrenar)#Captura Evento del JComboBox
+    botonTraining = tk.Button(
+        controlFrame,
+        text="Entrenar Red Neuronal",
+        command=entrenar,
+        bg="#2563eb",
+        fg="white",
+        activebackground="#1d4ed8",
+        activeforeground="white",
+        relief="flat",
+        padx=10,
+        pady=6
+    )#Captura Evento del JComboBox
 
 #JTextField  #Epoch quiere decir una pasada completa por todos los datos de entrenamiento
-    entradaEpoch = tk.Entry(ventana)#Valor para saber cuantas iteraciones voy a hacer en el for
-    entradaW = tk.Entry(ventana)
-    entradaB = tk.Entry(ventana)
-    entradaW2 = tk.Entry(ventana)
+    entradaEpoch = tk.Entry(controlFrame, relief="flat", highlightthickness=1, highlightbackground="#cbd5e1")#Valor para saber cuantas iteraciones voy a hacer en el for
+    entradaW = tk.Entry(controlFrame, relief="flat", highlightthickness=1, highlightbackground="#cbd5e1")
+    entradaB = tk.Entry(controlFrame, relief="flat", highlightthickness=1, highlightbackground="#cbd5e1")
+    entradaW2 = tk.Entry(controlFrame, relief="flat", highlightthickness=1, highlightbackground="#cbd5e1")
 
 #JTextArea
-    textArea = tk.Text(ventana, width=40, height=15)
+    textArea = tk.Text(textFrame, width=40, height=15, bg="#f8fafc", fg="#0f172a", relief="flat", highlightthickness=1, highlightbackground="#cbd5e1")
     
 #Scrollbar  para poder subir y bajar en el TextArea
-    scroll = tk.Scrollbar(ventana)#Lo agrego ala Interfaz
+    scroll = tk.Scrollbar(textFrame)#Lo agrego ala Interfaz
     scroll.config(command=textArea.yview)#Conectar el scroll con el TextArea
     textArea.config(yscrollcommand=scroll.set)#Conecto TextArea con Scrollbar
 #ComboBox
-    combo = ttk.Combobox(ventana,values=["FuncionLineal","FuncionCuadratica",
+    combo = ttk.Combobox(controlFrame,values=["FuncionLineal","FuncionCuadratica",
                                          "FuncionCubica","FuncionLogaritmica",
                                          "FuncionExponencial","FuncionTrigonometrica",
                                          "FuncionCircunferencia"])
 #Creacion del grafico dentro de la interfaz
-    canva = graphics.crearGraphics(ventana)
-    canva.get_tk_widget().place(x=20,y=20)#El place reemplaza al pack(add(object) en java)
+    canva = graphics.crearGraphics(plotFrame)
+    canva.get_tk_widget().pack(fill="both", expand=True, padx=8, pady=8)#El place reemplaza al pack(add(object) en java)
     #Coordenadas de donde estan ubicados los Componentes en la Interfaz Grafica
-    textEpoch.place(x=550,y=100) 
-    entradaEpoch.place(x=550,y=120)#Es como el setBound(coordenadas) en java
-    textTipoFuncion.place(x=550,y=30)
-    combo.place(x=550,y=50)
-    texto.place(x=440,y=0)#Agrega el objeto dentro de la interfaz
-    botonTraining.place(x=550,y=180)
-    textArea.place(x=550,y=250)
-    scroll.place(x=865,y=250,height=245)#Ubicacion del Scroll dentro del TextArea
-    entradaW.place(x=20,y=460)
-    entradaB.place(x=20,y=510)
-    entradaW2.place(x=200,y=460)
-    textW.place(x=20,y=440)
-    textB.place(x=20,y=490)
-    textW2.place(x=200,y=440)
+    header.place(x=20,y=12)
+    plotFrame.place(x=20,y=50, width=480, height=350)
+    controlFrame.place(x=520,y=20, width=350, height=260)
+    textFrame.place(x=520,y=295, width=350, height=265)
+
+    textTipoFuncion.place(x=20,y=20)
+    combo.place(x=20,y=42, width=300)
+    textEpoch.place(x=20,y=76)
+    entradaEpoch.place(x=20,y=98, width=120)#Es como el setBound(coordenadas) en java
+    textW.place(x=20,y=136)
+    entradaW.place(x=20,y=158, width=90)
+    textB.place(x=125,y=136)
+    entradaB.place(x=125,y=158, width=90)
+    textW2.place(x=230,y=136)
+    entradaW2.place(x=230,y=158, width=90)
+    botonTraining.place(x=90,y=190)
+
+    textArea.pack(side="left", fill="both", expand=True, padx=(8,0), pady=8)
+    scroll.pack(side="right", fill="y", pady=8, padx=(0,8))
 
 
 #loop infinito para que siempre se ejecute la ventana

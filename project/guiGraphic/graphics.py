@@ -5,6 +5,7 @@ import numpy as np#Para realizar calculos(Ayuda para Graficar)
 #Importaciones para comunicarme con las clases de las redes neuronales programadas
 from logic.LinealEquation import LinealEquation#Para comunicarme con la clase LinealEquation
 from logic.SquareEquation import SquareEquation#Para comunicarme con la red que me genera una cuadratica
+from logic.CubicEquation import CubicEquation
 from logic.LogarithmicEquation import LogarithmicEquation
 from logic.ExponentialEquation import ExponentialEquation
 from logic.TrigonometricEquation import TrigonometricEquation
@@ -89,6 +90,20 @@ def actualizarGrafica(tipoFuncion,epoch,w1,b1,w2):
         )
         
         textDetails = objCuadratica.getTextDetails()
+        capturarTextDetails()
+
+    elif tipoFuncion == "FuncionCubica":
+        w = np.random.randn()
+        b = np.random.randn()
+        z = np.random.randn()
+        x = np.linspace(-1, 1, 20)
+        y = w1 * x**3 + w2 * x**2 + b1 * x
+        grafica.plot(x, y)
+        objCubica = CubicEquation(x, y, w, b, z)
+        grafica.set_title("Red Neuronal F.Cúbica y = wx^3 + bx^2 + zx")
+        grafica.scatter(x, y, label="Datos reales")
+        grafica.plot(x, objCubica.prueba(epoch), color='red', label="Predicción")
+        textDetails = objCubica.getTextDetails()
         capturarTextDetails()
 
     elif tipoFuncion == "FuncionLogaritmica":
