@@ -48,7 +48,7 @@ def actualizarGrafica(tipoFuncion,epoch,w1,b1,w2):
         grafica.plot(x, y)
         #Comunicaciones de Objetos(Instancias)
         objLineal = LinealEquation(x,y,w,b)
-        grafica.set_title("Red Neuronal F.Lineal y = wx+b")
+        grafica.set_title(f"Red Neuronal F.Lineal y={w1}x+{b1}")
         grafica.scatter(
             x,
             y,
@@ -74,7 +74,7 @@ def actualizarGrafica(tipoFuncion,epoch,w1,b1,w2):
         grafica.plot(x, y)
         #Comunicaciones de Objetos(Instancias)
         objCuadratica = SquareEquation(x,y,w,b,z)
-        grafica.set_title("Red Neuronal F.Cuadrática ")
+        grafica.set_title(f"Red Neuronal F.Cuadrática y={w1}x^2+{w2}x+{b1}")
         grafica.scatter(
             x,
             y,
@@ -158,4 +158,5 @@ def actualizarGrafica(tipoFuncion,epoch,w1,b1,w2):
 
     canvas.draw()#Dibuja Grafica
 
+   
 
