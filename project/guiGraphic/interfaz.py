@@ -35,8 +35,11 @@ def habilitacionInputs(event):
         entradaW.config(state="normal")
         entradaB.config(state="normal")
         entradaW2.config(state="disabled")
-
     elif kindOfFunction == "FuncionCuadratica":
+        entradaW.config(state="normal")
+        entradaB.config(state="normal")
+        entradaW2.config(state="normal")
+    elif kindOfFunction == "FuncionCubica":
         entradaW.config(state="normal")
         entradaB.config(state="normal")
         entradaW2.config(state="normal")
