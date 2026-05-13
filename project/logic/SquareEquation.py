@@ -60,7 +60,7 @@ class SquareEquation:
             self.w = w#Actualizacion de la variable
             self.b=b
             self.z=z
-            self.textDetails+=f"Epoch {epoch}: loss={l:.4f}, w={w:.2f}, b={b:.2f}\n" #\n indica salto de linea
+            self.textDetails+=f"Epoch {epoch}: loss={l:.4f}, w={w:.2f}, b={b:.2f}, z={z:.2f}\n" #\n indica salto de linea
             print(f"Epoch {epoch}: loss={l:.4f}, w={w:.2f}, b={b:.2f}, z={z:.2f}")
         return self.forward()
 
