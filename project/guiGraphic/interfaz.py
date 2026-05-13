@@ -30,32 +30,30 @@ def getTexto(tipoFuncion,w,b,w2):
     inputDatesTextArea(graphics.capturarTextDetails())#Agrega Detalles del Entrenamiento
 
 def habilitacionInputs(event):
-    kindOfFunction =combo.get()
-    if kindOfFunction == "FuncionLineal":
+    kindOfFunction = combo.get()
+ 
+    # para funciones que solo usan W y B (W2 deshabilitado)
+    soloWB = {
+        "FuncionLineal",
+        "FuncionLogaritmica",
+        "FuncionTrigonometrica",
+        "FuncionRadical",        
+        "FuncionValorAbsoluto",  
+    }
+ 
+    # para funciones que usan W, B y W2
+    conW2 = {
+        "FuncionCuadratica",
+        "FuncionCubica",
+        "FuncionExponencial",
+        "FuncionCircunferencia",
+    }
+ 
+    if kindOfFunction in soloWB:
         entradaW.config(state="normal")
         entradaB.config(state="normal")
         entradaW2.config(state="disabled")
-    elif kindOfFunction == "FuncionCuadratica":
-        entradaW.config(state="normal")
-        entradaB.config(state="normal")
-        entradaW2.config(state="normal")
-    elif kindOfFunction == "FuncionCubica":
-        entradaW.config(state="normal")
-        entradaB.config(state="normal")
-        entradaW2.config(state="normal")
-    elif kindOfFunction == "FuncionLogaritmica":
-        entradaW.config(state="normal")
-        entradaB.config(state="normal")
-        entradaW2.config(state="disabled")
-    elif kindOfFunction == "FuncionExponencial":
-        entradaW.config(state="normal")
-        entradaB.config(state="normal")
-        entradaW2.config(state="normal")
-    elif kindOfFunction == "FuncionTrigonometrica":
-        entradaW.config(state="normal")
-        entradaB.config(state="normal")
-        entradaW2.config(state="disabled")
-    elif kindOfFunction == "FuncionCircunferencia":
+    elif kindOfFunction in conW2:
         entradaW.config(state="normal")
         entradaB.config(state="normal")
         entradaW2.config(state="normal")
@@ -151,7 +149,8 @@ def iniciar():
     combo = ttk.Combobox(controlFrame,values=["FuncionLineal","FuncionCuadratica",
                                          "FuncionCubica","FuncionLogaritmica",
                                          "FuncionExponencial","FuncionTrigonometrica",
-                                         "FuncionCircunferencia"])
+                                         "FuncionCircunferencia","FuncionRadical",        
+                                        "FuncionValorAbsoluto",])
     combo.bind("<<ComboboxSelected>>",habilitacionInputs)#Para manejar Evento con ComboBox
 # Habilitacion de Entradas de usuario
     entradaW.config(state="disabled")
@@ -189,8 +188,5 @@ def iniciar():
     textArea.pack(side="left", fill="both", expand=True, padx=(8,0), pady=(28,8))
     scroll.pack(side="right", fill="y", pady=8, padx=(0,8))
 
-
-
 #loop infinito para que siempre se ejecute la ventana
     ventana.mainloop()
-

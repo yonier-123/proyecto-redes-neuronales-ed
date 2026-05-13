@@ -10,6 +10,8 @@ from logic.LogarithmicEquation import LogarithmicEquation
 from logic.ExponentialEquation import ExponentialEquation
 from logic.TrigonometricEquation import TrigonometricEquation
 from logic.CircleEquation import CircleEquation
+from logic.AbsoluteEquation import AbsoluteEquation
+from logic.RadicalEquation import RadicalEquation
 
 
 def crearGraphics(ventana):
@@ -167,11 +169,34 @@ def actualizarGrafica(tipoFuncion,epoch,w1,b1,w2):
         textDetails = objCirc.getTextDetails()
         capturarTextDetails()
 
+    elif tipoFuncion == "FuncionRadical":
+        w = np.random.randn()
+        b = np.random.randn()
+        x = np.linspace(0, 4, 20)          # x >= 0 para que √x este definida
+        y = w1 * np.sqrt(x) + b1
+        grafica.plot(x, y)
+        objRad = RadicalEquation(x, y, w, b)
+        grafica.set_title(f"Red Neuronal F.Radical y = {w1}·√x + {b1}")
+        grafica.scatter(x, y, label="Datos reales")
+        grafica.plot(x, objRad.prueba(epoch), color='red', label="Predicción")
+        textDetails = objRad.getTextDetails()
+        capturarTextDetails()
+ 
+    elif tipoFuncion == "FuncionValorAbsoluto":
+        w = np.random.randn()
+        b = np.random.randn()
+        x = np.linspace(-2, 2, 20)
+        y = w1 * np.abs(x) + b1
+        grafica.plot(x, y)
+        objAbs = AbsoluteEquation(x, y, w, b)
+        grafica.set_title(f"Red Neuronal F.Valor Absoluto y = {w1}·|x| + {b1}")
+        grafica.scatter(x, y, label="Datos reales")
+        grafica.plot(x, objAbs.prueba(epoch), color='red', label="Predicción")
+        textDetails = objAbs.getTextDetails()
+        capturarTextDetails()
+
     elif tipoFuncion=="":
         textDetails=""#Queda Vacio porque no se ha seleccionado una red neuronal que aprende una funcion
         capturarTextDetails()
 
     canvas.draw()#Dibuja Grafica
-
-   
-
